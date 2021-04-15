@@ -1,0 +1,21 @@
+{
+  "name": "vite-project",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@sveltejs/vite-plugin-svelte": "next",
+    "autoprefixer": "latest",
+    "big.js": "latest",
+    "fs-extra": "latest",
+    "node-fetch": "latest",
+    "postcss": "latest",
+    "svelte": "latest",
+    "tailwindcss": "latest",
+    "tesseract.js": "latest",
+    "vite": "latest"
+  }
+}
