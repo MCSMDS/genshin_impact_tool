@@ -4,14 +4,14 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        'canhover': {'raw': '(hover: hover)'},
+        canhover: { raw: '(hover: hover)' }
       }
     }
   },
   variants: {
     extend: {
-      backgroundColor: ['active'],
+      backgroundColor: ['active']
     }
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/aspect-ratio')]
 }

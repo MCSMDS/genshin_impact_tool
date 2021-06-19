@@ -1,29 +1,16 @@
 import path from 'path'
 import fs from 'fs-extra'
 import { defineConfig } from 'vite'
-import svelte from '@sveltejs/vite-plugin-svelte'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 
-const ffmpeg = () => {
+const langPath = () => {
   let mode
   return {
-    configResolved(resolvedConfig) {
-      mode = resolvedConfig.command
-    },
-    resolveId(id) {
-      if (id === 'opencvPath') {
-        return 'opencvPath'
-      }
-    },
-    load(id) {
-      if (id === 'opencvPath') {
-        return `export default '${mode === 'build' ? 'assets/opencv.js' : 'src/opencv.js'}'`
-      }
+    configResolved({ command }) {
+      mode = command
     },
     closeBundle() {
-      if (mode === 'build') {
-        fs.copySync('src/langPath', 'dist/langPath')
-        //fs.copySync('src/opencv.js', 'dist/assets/opencv.js')
-      }
+      mode === 'build' && fs.copySync('src/langPath', 'dist/langPath')
     }
   }
 }
@@ -38,6 +25,6 @@ export default defineConfig({
   },
   plugins: [
     svelte(),
-    ffmpeg()
+    langPath()
   ]
 })
