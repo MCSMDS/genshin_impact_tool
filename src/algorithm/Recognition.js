@@ -1,5 +1,5 @@
 import { createWorker, createScheduler } from 'tesseract.js'
-import { buildPercentage } from '@/systen/MathSystem';
+import { buildPercentage } from '@/algorithm/MathSystem';
 import cv from "@/algorithm/opencv";
 
 const getBox = async (image) => {
@@ -27,7 +27,7 @@ class OCR {
   constructor(language) {
     this._init = (async () => {
       this.scheduler = createScheduler();
-      this.worker = createWorker({ langPath: import.meta.env.PROD ? 'langPath' : 'src/langPath' });
+      this.worker = createWorker({ langPath: (import.meta.env.DEV ? 'src/' : '') + 'langPath' });
       await this.worker.load();
       await this.worker.loadLanguage(language);
       await this.worker.initialize(language);

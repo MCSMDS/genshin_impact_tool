@@ -1,5 +1,5 @@
-import { plus, buildPercentage } from '@/systen/MathSystem';
-import FileSystem from "@/systen/FileSystem";
+import { plus, buildPercentage } from '@/algorithm/MathSystem';
+import FileSystem from "@/algorithm/FileSystem";
 import cv from "@/algorithm/opencv";
 
 const getLoudestTimes = async (file, amount) => {

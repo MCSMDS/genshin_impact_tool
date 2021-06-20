@@ -1,7 +1,7 @@
 <script>
   import Form from "./form.svelte";
   import Verify from "@/algorithm/Verify";
-  import { json, fixindex } from "@/systen/StoreSystem";
+  import { json, fixindex } from "@/algorithm/StoreSystem";
 
   $: $json[$fixindex].verify = Verify($json[$fixindex]);
 

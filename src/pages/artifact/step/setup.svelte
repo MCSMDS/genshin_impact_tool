@@ -1,6 +1,6 @@
 <script>
   import Upload from "@/icon/upload.svelte";
-  import { video } from "@/systen/StoreSystem";
+  import { video } from "@/algorithm/StoreSystem";
   let uploader;
 </script>
 

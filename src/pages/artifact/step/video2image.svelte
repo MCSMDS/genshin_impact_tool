@@ -1,5 +1,5 @@
 <script>
-  import { thenum } from "@/systen/StoreSystem";
+  import { thenum } from "@/algorithm/StoreSystem";
 </script>
 
 <div class="flex rounded-md shadow">

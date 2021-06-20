@@ -3,14 +3,17 @@ import fs from 'fs-extra'
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 
-const langPath = () => {
+const plugins = () => {
   let mode
   return {
     configResolved({ command }) {
       mode = command
     },
     closeBundle() {
-      mode === 'build' && fs.copySync('src/langPath', 'dist/langPath')
+      if (mode === 'build') {
+        fs.copySync('src/langPath', 'dist/langPath')
+        fs.copySync('src/db', 'dist/db')
+      }
     }
   }
 }
@@ -18,13 +21,28 @@ const langPath = () => {
 export default defineConfig({
   base: './',
   resolve: {
-    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte'],
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.join(__dirname, 'src')
     },
+    extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte']
   },
   plugins: [
     svelte(),
-    langPath()
-  ]
+    plugins()
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (path.extname(id) === '.js') {
+            if (id.includes('node_modules')) return 'vendor';
+            if (id.includes('algorithm')) return 'algorithm';
+          }
+          if (path.extname(id) === '.json') {
+            return 'json';
+          }
+        }
+      }
+    }
+  }
 })

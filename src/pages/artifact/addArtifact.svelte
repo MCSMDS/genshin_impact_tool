@@ -10,16 +10,16 @@
   import Fixerror from "./step/fixerror.svelte";
   import Progress from "./step/progress.svelte";
 
-  import FileSystem from "@/systen/FileSystem";
+  import FileSystem from "@/algorithm/FileSystem";
 
-  import { video } from "@/systen/StoreSystem";
-  import { thenum } from "@/systen/StoreSystem";
-  import { images } from "@/systen/StoreSystem";
-  import { json } from "@/systen/StoreSystem";
-  import { fixindex } from "@/systen/StoreSystem";
-  import { myprogress } from "@/systen/StoreSystem";
+  import { video } from "@/algorithm/StoreSystem";
+  import { thenum } from "@/algorithm/StoreSystem";
+  import { images } from "@/algorithm/StoreSystem";
+  import { json } from "@/algorithm/StoreSystem";
+  import { fixindex } from "@/algorithm/StoreSystem";
+  import { myprogress } from "@/algorithm/StoreSystem";
 
-  import { plus, fixPercentage } from "@/systen/MathSystem";
+  import { plus, fixPercentage } from "@/algorithm/MathSystem";
 
   let showButton;
   $: showButton = $video && $video.type.includes("video");
@@ -33,11 +33,7 @@
         break;
       case "video2image":
         (showButton = false), ($myprogress = 0), (step = "loading");
-        $images = await imageReader(
-          new FileSystem($video),
-          $thenum,
-          (progress) => ($myprogress = progress)
-        );
+        $images = await imageReader(new FileSystem($video), $thenum, (progress) => ($myprogress = progress));
         console.log($images);
         (step = "readiamge"), ($myprogress = 0), (showButton = true);
         break;
@@ -45,14 +41,7 @@
         (showButton = false), ($myprogress = 0), (step = "loading");
         let array = [];
         for (var index in $images) {
-          const result = await Recognition(
-            $images[index],
-            (progress) =>
-              ($myprogress = fixPercentage(
-                plus(index * 100, progress),
-                $images.length * 100
-              ))
-          );
+          const result = await Recognition($images[index], (progress) => ($myprogress = fixPercentage(plus(index * 100, progress), $images.length * 100)));
           array.push({
             ...result,
             src: URL.createObjectURL($images[index].file),
@@ -86,31 +75,30 @@
   };
 </script>
 
-<div class={(showButton ? "h-full-10" : "h-full") + " p-4 overflow-auto"}>
-  {#if step == "loading"}
-    <Progress />
-  {/if}
-  {#if step == "setup"}
-    <Setup />
-  {/if}
-  {#if step == "video2image"}
-    <Video2image />
-  {/if}
-  {#if step == "readiamge"}
-    <Readiamge />
-  {/if}
-  {#if step == "fixerror"}
-    <Fixerror />
-  {/if}
-  {#if step == "showresult"}
-    <Showresult />
-  {/if}
-</div>
-
-<div class={showButton ? "h-10" : "hidden"}>
-  <button class="p-2 w-full bg-blue-500 text-white" on:click={buttonClick}>
-    下一步
-  </button>
+<div class="absolute inset-0 bg-white">
+  <div class={(showButton ? "h-full-10" : "h-full") + " p-4 overflow-auto"}>
+    {#if step == "loading"}
+      <Progress />
+    {/if}
+    {#if step == "setup"}
+      <Setup />
+    {/if}
+    {#if step == "video2image"}
+      <Video2image />
+    {/if}
+    {#if step == "readiamge"}
+      <Readiamge />
+    {/if}
+    {#if step == "fixerror"}
+      <Fixerror />
+    {/if}
+    {#if step == "showresult"}
+      <Showresult />
+    {/if}
+  </div>
+  <div class={showButton ? "h-10" : "hidden"}>
+    <button class="p-2 w-full bg-blue-500 text-white" on:click={buttonClick}> 下一步 </button>
+  </div>
 </div>
 
 <style>

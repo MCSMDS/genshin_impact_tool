@@ -4,12 +4,11 @@
   let open = false;
 </script>
 
-<div class="relative h-full p-2">
-  <div class="h-full overflow-auto pb-14">
+<div class="relative h-full p-2 overflow-hidden">
+  <div class="h-full  pb-14 relative">
+    <Artifactlist />
     {#if open}
       <AddArtifact />
-    {:else}
-      <Artifactlist />
     {/if}
   </div>
   <div class="absolute bottom-2 right-2 text-white text-2xl">

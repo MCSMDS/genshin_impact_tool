@@ -1,5 +1,5 @@
 <script>
-  import { myprogress } from "@/systen/StoreSystem";
+  import { myprogress } from "@/algorithm/StoreSystem";
 </script>
 
 <div class="flex flex-col justify-center space-x-4 h-full">

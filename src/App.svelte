@@ -7,27 +7,27 @@
   import A from "@/pages/char";
   import B from "@/pages/weapon";
   import C from "@/pages/artifact";
-  import D from "@/pages/other";
+  import D from "@/pages/overview";
 
   let page = A;
 </script>
 
 <div class="h-full">
-  <div class="h-full-12 overflow-auto">
+  <div class="h-full-12">
     <svelte:component this={page} />
   </div>
   <div class="h-12 flex shadowtop">
     <button class="w-full focus:outline-none active:bg-gray-300 canhover:hover:bg-gray-200 canhover:active:bg-gray-300" on:click={() => (page = A)}>
-      <Char class={"w-full h-10 fill-current " + (page == A ? "text-blue-500" : "text-gray-600")} />
+      <Char class={"w-full h-10 fill-current " + (page === A ? "text-blue-500" : "text-gray-600")} />
     </button>
     <button class="w-full focus:outline-none active:bg-gray-300 canhover:hover:bg-gray-200 canhover:active:bg-gray-300" on:click={() => (page = B)}>
-      <Weapon class={"w-full h-10 fill-current " + (page == B ? "text-blue-500" : "text-gray-600")} />
+      <Weapon class={"w-full h-10 fill-current " + (page === B ? "text-blue-500" : "text-gray-600")} />
     </button>
     <button class="w-full focus:outline-none active:bg-gray-300 canhover:hover:bg-gray-200 canhover:active:bg-gray-300" on:click={() => (page = C)}>
-      <Artifact class={"w-full h-10 fill-current " + (page == C ? "text-blue-500" : "text-gray-600")} />
+      <Artifact class={"w-full h-10 fill-current " + (page === C ? "text-blue-500" : "text-gray-600")} />
     </button>
     <button class="w-full focus:outline-none active:bg-gray-300 canhover:hover:bg-gray-200 canhover:active:bg-gray-300" on:click={() => (page = D)}>
-      <Puzzle class={"w-full h-10 fill-current " + (page == D ? "text-blue-500" : "text-gray-600")} />
+      <Puzzle class={"w-full h-10 fill-current " + (page === D ? "text-blue-500" : "text-gray-600")} />
     </button>
   </div>
 </div>

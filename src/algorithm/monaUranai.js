@@ -1,4 +1,4 @@
-import { div } from '@/systen/MathSystem';
+import { div } from '@/algorithm/MathSystem';
 
 const toSetName = (alternative) => {
   return alternative

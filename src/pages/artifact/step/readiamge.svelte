@@ -1,5 +1,5 @@
 <script>
-  import { images } from "@/systen/StoreSystem";
+  import { images } from "@/algorithm/StoreSystem";
 </script>
 
 {#each $images as image}

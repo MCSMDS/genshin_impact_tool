@@ -1,5 +1,5 @@
 <script>
-  import { json } from "@/systen/StoreSystem";
+  import { json } from "@/algorithm/StoreSystem";
   import monaUranai from "@/algorithm/monaUranai";
   let result;
   $: result = JSON.stringify(monaUranai($json), null, 2);
