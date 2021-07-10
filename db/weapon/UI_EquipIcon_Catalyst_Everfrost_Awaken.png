@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Error>
-  <Code>NoSuchKey</Code>
-  <Message>The specified key does not exist.</Message>
-  <RequestId>60CF42879EB6B23634EC9A92</RequestId>
-  <HostId>plat-bbs-upload-sea.oss-cn-hongkong.aliyuncs.com</HostId>
-  <Key>game_record/genshin/equip/UI_EquipIcon_Catalyst_Everfrost_Awaken.png</Key>
-</Error>
