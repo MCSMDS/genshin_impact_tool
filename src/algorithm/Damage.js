@@ -1,4 +1,4 @@
-import Big from "big.js";
+import Big from 'big.js';
 
 const plus = (a, b) => Big(a).plus(b).toNumber();
 const times = (a, b) => Big(a).times(b).toNumber();
@@ -14,7 +14,7 @@ let db = {
   'sand': {
     //'防御力%': 0.583,
     //'生命值%': 0.466,
-    '攻击力%': 0.466,
+    '攻击力%': 0.466
     //'元素充能效率': 0.518,
     //'元素精通': 187
   },
@@ -28,7 +28,7 @@ let db = {
     '风元素伤害加成': 0.466,
     '火元素伤害加成': 0.466,
     '冰元素伤害加成': 0.466,
-    '物理伤害加成': 0.583,
+    '物理伤害加成': 0.583
     //'元素精通': 187
   },
   'head': {
@@ -36,7 +36,7 @@ let db = {
     //'生命值%': 0.466,
     '攻击力%': 0.466,
     '暴击率': 0.311,
-    '暴击伤害': 0.622,
+    '暴击伤害': 0.622
     //'治疗加成': 0.359,
     //'元素精通': 187
   },
@@ -47,7 +47,7 @@ let db = {
     //'元素充能效率': 0.065,
     '暴击率': 0.039,
     '暴击伤害': 0.078,
-    '攻击力': 19,
+    '攻击力': 19
     //'生命值': 299,
     //'防御力': 23,
     //'元素精通': 23
@@ -64,7 +64,7 @@ let damage = (character, weapon, percentage, fixed, skilltimes, bonus, critrate,
 
 let cartesianProduct = (...args) => args.reduce((a, b) => {
   const result = [];
-  a.forEach((a) => b.forEach((b) => result.push([...a, b])));
+  a.forEach(a => b.forEach(b => result.push([...a, b])));
   return result;
 }, [[]])
 
@@ -73,12 +73,12 @@ let combine = (arr, len) => {
   const result = [];
   arr.forEach((a, i) => {
     const smaller = combine(arr.slice(i + 1), len - 1);
-    smaller.forEach((b) => result.push([a].concat(b)));
+    smaller.forEach(b => result.push([a].concat(b)));
   });
   return result;
 }
 
-let flat = (input) => {
+let flat = input => {
   var output = {}
   for (var obj of Object.values(input)) {
     for (var [key, value] of Object.entries(obj)) {
@@ -105,12 +105,12 @@ function getBest(panel, element) {
     'head': {}
   };
   element = element
-    .replace("phys", "物理伤害加成")
-    .replace("雷", "雷元素伤害加成")
-    .replace("岩", "岩元素伤害加成")
-    .replace("风", "风元素伤害加成")
-    .replace("水", "水元素伤害加成")
-    .replace("火", "火元素伤害加成")
+    .replace('phys', '物理伤害加成')
+    .replace('雷', '雷元素伤害加成')
+    .replace('岩', '岩元素伤害加成')
+    .replace('风', '风元素伤害加成')
+    .replace('水', '水元素伤害加成')
+    .replace('火', '火元素伤害加成')
   function upgrade() {
     function tries(key) {
       var clone = JSON.parse(JSON.stringify(second));
@@ -162,7 +162,7 @@ const getartifacs = (element, character, weapon, skilltimes, other) => {
     let panel = {
       '角色攻击力': character,
       '武器攻击力': weapon,
-      '技能倍率': skilltimes,
+      '技能倍率': skilltimes
     }
     for (var [key, value] of other) panel[key] = plus(panel[key] || 0, value);
     for (var [key, value] of main) panel[key] = plus(panel[key] || 0, value);

@@ -1,6 +1,6 @@
 <script>
   import char from "@/db/char.json";
-  const iconurl = (icon) => (import.meta.env.DEV ? "src/" : "") + `db/char/${icon}.png`;
+  const iconurl = (icon) => (import.meta.env.DEV ? "src/db/icon" : "db") + `/char/${icon}.png`;
 </script>
 
 <div class="h-full overflow-auto">

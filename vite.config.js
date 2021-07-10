@@ -12,7 +12,7 @@ const plugins = () => {
     closeBundle() {
       if (mode === 'build') {
         fs.copySync('src/langPath', 'dist/langPath')
-        fs.copySync('src/db', 'dist/db')
+        fs.copySync('src/db/icon', 'dist/db')
       }
     }
   }

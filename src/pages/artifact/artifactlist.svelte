@@ -2,7 +2,7 @@
   import ajson from "@/db/artifact.json";
   let list;
   $: list = JSON.parse(localStorage.artifact || "[]");
-  const iconurl = (icon) => (import.meta.env.DEV ? "src/" : "") + `db/artifact/${icon}.png`;
+  const iconurl = (icon) => (import.meta.env.DEV ? "src/db/icon" : "db") + `/artifact/${icon}.png`;
 </script>
 
 <div class="h-full overflow-auto">
@@ -48,8 +48,8 @@
 
 <style>
   @font-face {
-    font-family: "yuanshen";
-    src: url("yuanshen.ttf");
+    font-family: yuanshen;
+    src: url(@/db/yuanshen.ttf);
   }
   p,
   li {

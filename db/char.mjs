@@ -14,12 +14,14 @@ const jsondata = readJsonData({
   ProudSkillExcelConfigData: {}
 })
 
-const getIcon = name => {
+const getIcon = async (name, should) => {
   const download = async () => {
+    console.log(name)
     const res = await fetch(`https://upload-bbs.mihoyo.com/game_record/genshin/character_icon/${name}.png`)
-    fs.outputFileSync(`src/db/char/${name}.png`, await res.buffer())
+    console.log(name)
+    fs.outputFileSync(`src/db/icon/char/${name}.png`, await res.buffer())
   }
-  //download()
+  should && await download()
   return name
 }
 
@@ -64,22 +66,22 @@ function getA(data) {
         e = e.replace(abcd, el.ParamList[abcd.match(/{param(\d+):\w+}/)[1] - 1])
       );
       let [key, value] = e.split('|')
-      if (value.includes('+')) value = value.split("+").reduce((a, b) => a.plus(b), Big(0)).toNumber()
-      else if (value.includes('*')) value = value.split("*").reduce((a, b) => a.times(b), Big(1)).toNumber()
-      else if (value.includes('/')) value = value.split("/").map(a => Big(a).toNumber());
+      if (value.includes('+')) value = value.split('+').reduce((a, b) => a.plus(b), Big(0)).toNumber()
+      else if (value.includes('*')) value = value.split('*').reduce((a, b) => a.times(b), Big(1)).toNumber()
+      else if (value.includes('/')) value = value.split('/').map(a => Big(a).toNumber());
       else value = Big(value.match(/\d*\.*\d+/)[0]).toNumber()
       return [key, value]
     })
   ).map(e => Object.fromEntries(e))
 }
 
-const char = () => {
-  const result = jsondata.AvatarCodexExcelConfigData
+const char = async withicon => {
+  const result = await jsondata.AvatarCodexExcelConfigData
     .sort((a, b) => a.BeginTime > b.BeginTime ? 1 : -1)
     .map(a => jsondata.AvatarExcelConfigData.find(b => a.AvatarId === b.Id))
-    .map(data => ({
+    .mapSync(async data => ({
       Name: readTextMap(data.NameTextMapHash),
-      Icon: getIcon(data.IconName),
+      Icon: await getIcon(data.IconName, withicon),
       WeaponType: readTextMap(data.WeaponType),
       Vision: readTextMap(jsondata.FetterInfoExcelConfigData.find(el => el.AvatarId === data.Id).AvatarVisionBeforTextMapHash),
       Prop: getProp(data),

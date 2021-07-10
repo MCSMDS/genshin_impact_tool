@@ -9,16 +9,16 @@ const jsondata = readJsonData({
   ReliquaryCodexExcelConfigData: {}
 });
 
-const getIcon = name => {
+const getIcon = (name, should) => {
   const download = async () => {
     const res = await fetch(`https://upload-os-bbs.mihoyo.com/game_record/genshin/equip/${name}.png`)
-    fs.outputFileSync(`src/db/artifact/${name}.png`, await res.buffer())
+    fs.outputFileSync(`src/db/icon/artifact/${name}.png`, await res.buffer())
   }
-  //download()
+  should && download()
   return name
 }
 
-const artifact = async () => {
+const artifact = async withicon => {
   const obj = []
   for (let data of jsondata.ReliquarySetExcelConfigData.filter(json => !json.DisableFilter)) {
     let affix = jsondata.EquipAffixExcelConfigData.filter(json => json.Id == data.EquipAffixId)
@@ -30,7 +30,7 @@ const artifact = async () => {
       let artifact = jsondata.ReliquaryExcelConfigData.find(json => json.Id == id)
       obj.push({
         Name: readTextMap(artifact.NameTextMapHash),
-        Icon: getIcon(artifact.Icon),
+        Icon: getIcon(artifact.Icon, withicon),
         EquipType: readTextMap(artifact.EquipType),
         Affix: [affixName, ...affixList]
       });

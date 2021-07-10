@@ -3,5 +3,5 @@
 </script>
 
 {#each $images as image}
-   <img src={URL.createObjectURL(image.file)} alt="" />
+  <img src={image.toURL()} alt="" />
 {/each}

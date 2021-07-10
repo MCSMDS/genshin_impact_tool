@@ -10,12 +10,14 @@ const jsondata = readJsonData({
   WeaponPromoteExcelConfigData: {}
 });
 
-const getIcon = name => {
+const getIcon = async (name, should) => {
   const download = async () => {
+    console.log(name)
     const res = await fetch(`https://upload-os-bbs.mihoyo.com/game_record/genshin/equip/${name}.png`)
-    fs.outputFileSync(`src/db/weapon/${name}.png`, await res.buffer())
+    console.log(name)
+    fs.outputFileSync(`src/db/icon/weapon/${name}.png`, await res.buffer())
   }
-  //download()
+  should && await download()
   return name
 }
 
@@ -46,14 +48,14 @@ function getProp(data) {
   return result
 }
 
-const weapon = () => {
-  const result = jsondata.WeaponCodexExcelConfigData
+const weapon = async withicon => {
+  const result = await jsondata.WeaponCodexExcelConfigData
     .filter(el => !el.IsDeleteWatcherAfterFinish)
     .map(a => jsondata.WeaponExcelConfigData.find(b => a.WeaponId === b.Id))
     //.slice(89, 90)
-    .map(data => ({
+    .mapSync(async data => ({
       Name: readTextMap(data.NameTextMapHash),
-      Icon: getIcon(data.Icon),
+      Icon: await getIcon(data.Icon, withicon),
       WeaponType: readTextMap(data.WeaponType),
       Prop: getProp(data)
     }))

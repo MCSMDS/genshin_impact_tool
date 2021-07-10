@@ -30,7 +30,7 @@ const verifyPart = part => {
   return ['生之花', '死之羽', '时之沙', '空之杯', '理之冠'].includes(part);
 }
 
-const verifyMain = (main) => {
+const verifyMain = main => {
   var abcd;
   if (main.value.includes('%')) {
     var a = {
@@ -47,7 +47,7 @@ const verifyMain = (main) => {
       元素充能效率: 51.8,
       暴击率: 31.1,
       暴击伤害: 62.2,
-      治疗加成: 35.9,
+      治疗加成: 35.9
     }
     abcd = a[main.name]
   } else {
@@ -61,7 +61,7 @@ const verifyMain = (main) => {
   return abcd == main.value.replace('%', '');
 }
 
-const verifySecond = (second) => {
+const verifySecond = second => {
   const cr = i => list[i].length == 4 ? list[i] = listBuilder(list[i]) : list[i];
   const f = (arr, n) => arr.includes(n);
   if (second.value.includes('%')) {
@@ -121,8 +121,8 @@ const Verify = element => {
     verifySecond(element.second2),
     verifySecond(element.second3),
     verifySecond(element.second4),
-    verifyAlternative(element.alternative),
+    verifyAlternative(element.alternative)
   ];
 };
 
-export default Verify;
+export default Verify

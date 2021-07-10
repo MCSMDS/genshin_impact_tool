@@ -1,4 +1,4 @@
-import Big from "big.js";
+import Big from 'big.js';
 
 export const sum = (...args) => args.reduce((big, num) => big.plus(num), Big(0)).toNumber();
 export const plus = (a, b) => Big(a).plus(b).toNumber();

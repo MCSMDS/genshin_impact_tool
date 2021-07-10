@@ -1,8 +1,9 @@
 import { createWorker, createScheduler } from 'tesseract.js'
 import { buildPercentage } from '@/algorithm/MathSystem';
-import cv from "@/algorithm/opencv";
+import cv from '@/algorithm/opencv';
 
-const getBox = async (image) => {
+window.cv=cv;
+const getBox = async image => {
   const src = cv.imread(await image.toCanvas());
   cv.cvtColor(src, src, cv.COLOR_RGB2GRAY);
   cv.Canny(src, src, 8, 128, 3, true);
@@ -48,7 +49,7 @@ class OCR {
 const chineseOCR = new OCR('chi_sim');
 const numberhOCR = new OCR('chi_sim+eng');
 
-const toNegate = async (negateimg) => {
+const toNegate = async negateimg => {
   const canvas = await negateimg.toCanvas()
   const ctx = canvas.getContext('2d')
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
@@ -72,6 +73,7 @@ const readArtifact = async (image, progress) => {
   const newProgress = buildPercentage(9, progress);
 
   const box = await getBox(image);
+  console.log(box)
   let negateimg = await toNegate(image);
   newProgress();
   let part = (box[1] && (await chineseOCR.read(negateimg, ...box[1]))) || '';
@@ -80,15 +82,15 @@ const readArtifact = async (image, progress) => {
   newProgress();
   let main2 = (box[3] && (await numberhOCR.read(negateimg, ...box[3]))) || '';
   newProgress();
-  let second1 = (box[4] && (await chineseOCR.read(image.file, ...box[6]))) || '';
+  let second1 = (box[6] && (await chineseOCR.read(image.toFile(), ...box[6]))) || '';
   newProgress()
-  let second2 = (box[5] && (await chineseOCR.read(image.file, ...box[7]))) || '';
+  let second2 = (box[7] && (await chineseOCR.read(image.toFile(), ...box[7]))) || '';
   newProgress();
-  let second3 = (box[6] && (await chineseOCR.read(image.file, ...box[8]))) || '';
+  let second3 = (box[8] && (await chineseOCR.read(image.toFile(), ...box[8]))) || '';
   newProgress();
-  let second4 = (box[7] && (await chineseOCR.read(image.file, ...box[9]))) || '';
+  let second4 = (box[9] && (await chineseOCR.read(image.toFile(), ...box[9]))) || '';
   newProgress();
-  let alternative = (box[8] && (await chineseOCR.read(image.file, ...box[10]))) || '';
+  let alternative = (box[10] && (await chineseOCR.read(image.toFile(), ...box[10]))) || '';
   newProgress();
 
   const Artifact = {

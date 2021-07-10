@@ -1,6 +1,6 @@
 import { plus, buildPercentage } from '@/algorithm/MathSystem';
-import FileSystem from "@/algorithm/FileSystem";
-import cv from "@/algorithm/opencv";
+import FileSystem from '@/algorithm/FileSystem';
+import cv from '@/algorithm/opencv';
 
 const getLoudestTimes = async (file, amount) => {
   if (window.AudioContext) {
@@ -15,11 +15,11 @@ const getLoudestTimes = async (file, amount) => {
       for (let j = from; j < to; j++) value = Math.max(data[j], value);
       compress.push(value);
     }
-    var loudest = [...compress].sort((x, y) => y - x)[amount];
+    const loudest = [...compress].sort((x, y) => y - x)[amount];
     return compress.map((value, index) => value <= loudest ? NaN : index / 10).filter(value => !isNaN(value));
   } else {
     return new Promise(async resolve => {
-      const audio = document.createElement("audio");
+      const audio = document.createElement('audio');
       audio.ondurationchange = () => resolve([...Array(Math.ceil(audio.duration * 10))].map((value, index) => index / 10));
       audio.src = await file.toURL()
     })
@@ -29,11 +29,11 @@ const getLoudestTimes = async (file, amount) => {
 const captureImgs = (file, times, updatePercentage) => new Promise(async resolve => {
   let index = 0;
   const images = [];
-  const video = document.createElement("video");
+  const video = document.createElement('video');
   video.addEventListener('loadeddata', () => video.currentTime = times[index]);
   video.addEventListener('seeked', async () => {
     if (index < times.length) {
-      let canvas = document.createElement("canvas");
+      const canvas = document.createElement('canvas');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       await new Promise(resolve => setTimeout(resolve, 512));
@@ -52,7 +52,7 @@ const captureImgs = (file, times, updatePercentage) => new Promise(async resolve
   updatePercentage();
 })
 
-const getBox = async (image) => {
+const getBox = async image => {
   const src = cv.imread(image);
   cv.cvtColor(src, src, cv.COLOR_RGB2GRAY);
   cv.Canny(src, src, 8, 128, 3, true);
@@ -62,29 +62,32 @@ const getBox = async (image) => {
   const area = [];
   for (let i = 0; i < contours.size(); i++) { area.push(cv.contourArea(contours.get(i))) }
   const { x, y, width, height } = cv.boundingRect(contours.get(area.indexOf(Math.max(...area))));
-  return [x + 2, y + 2, width - 2, height - 2];
+  return [x + 5, y + 5, width - 5, height - 5];
 }
 
-const crop = (image, x, y, width, height) => {
-  const canvas = document.createElement("canvas");
+export const crop = (image, x, y, width, height) => {
+  const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   canvas.getContext('2d').drawImage(image, x, y, width, height, 0, 0, width, height);
   return canvas;
 }
 
-const imageReader = async (file, amount = 1, progress = () => null) => {
+export const imageReader = async (file, amount = 1, x, y, width, height, progress = () => null) => {
   const [loudestTime] = await getLoudestTimes(file, 1);
   const loudestTimes = await getLoudestTimes(file, amount || 1);
-  const newProgress = buildPercentage(plus(5, loudestTimes.length), progress);
+  const newProgress = buildPercentage(plus(4, loudestTimes.length), progress);
   newProgress();
   let images = await captureImgs(file, loudestTimes, newProgress);
   newProgress();
-  const [x, y, width, height] = await getBox(images[loudestTimes.indexOf(loudestTime)]);
+  //const [x, y, width, height] = await getBox(images[loudestTimes.indexOf(loudestTime)]);
   newProgress();
-  images = await Promise.all(images.map(canvas => new Promise(resolve => crop(canvas, x, y, width, height).toBlob(resolve))));
-  newProgress();
-  return images.map((blob, id) => new FileSystem(new File([blob], id + '.png')));
+  return images.map(canvas => new FileSystem(crop(canvas, x, y, width, height)));
 }
 
-export default imageReader;
+export const cutImg = async file => {
+  const loudestTime = await getLoudestTimes(file, 1);
+  const [images] = await captureImgs(file, loudestTime, () => null);
+  const [x, y, width, height] = await getBox(images);
+  return [x, y, width, height, images];
+}
