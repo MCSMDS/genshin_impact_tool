@@ -1,4 +1,4 @@
-import { div } from '@/algorithm/MathSystem';
+import { div } from '@/algorithm/MathSystem'
 
 const toSetName = alternative => {
   return alternative
@@ -18,6 +18,8 @@ const toSetName = alternative => {
     .replace('沉沦之心', 'heartOfDepth')
     .replace('千岩牢固', 'tenacityOfTheMillelith')
     .replace('苍白之火', 'paleFlame')
+    .replace('追忆之注连', 'shimenawaReminiscence').
+    replace('绝缘之旗印', 'emblemOfSeveredFate')
 }
 
 const toPosition = part => {
@@ -30,8 +32,8 @@ const toPosition = part => {
 }
 
 function toTag(input) {
-  let name;
-  let value;
+  let name
+  let value
   if (input.value.includes('%')) {
     name = input.name
       .replace('攻击力', 'attackPercentage')
@@ -57,7 +59,7 @@ function toTag(input) {
       .replace('元素精通', 'elementalMastery')
     value = Number(input.value)
   }
-  return { name, value };
+  return { name, value }
 }
 
 const monaUranai = json => {
@@ -68,7 +70,7 @@ const monaUranai = json => {
     cup: [],
     head: []
   }
-  let id = 0;
+  let id = 0
   json.forEach(element => {
     let artifact = {
       setName: toSetName(element.alternative),
@@ -86,9 +88,9 @@ const monaUranai = json => {
       level: 20,
       id: id++
     }
-    result[artifact.position].push(artifact);
+    result[artifact.position].push(artifact)
   })
-  return result;
+  return result
 }
 
 export default monaUranai

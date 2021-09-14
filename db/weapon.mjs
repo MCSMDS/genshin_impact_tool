@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
+import fs from 'fs-extra'
 import Big from 'big.js'
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'
 import { readJsonData, readTextMap } from './utility.mjs'
 
 const jsondata = readJsonData({
@@ -8,7 +8,7 @@ const jsondata = readJsonData({
   WeaponExcelConfigData: {},
   WeaponCurveExcelConfigData: {},
   WeaponPromoteExcelConfigData: {}
-});
+})
 
 const getIcon = async (name, should) => {
   const download = async () => {

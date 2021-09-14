@@ -64,11 +64,11 @@ function getA(data) {
     .map(e => {
       e.match(/{param\d+:\w+}/g).forEach(abcd =>
         e = e.replace(abcd, el.ParamList[abcd.match(/{param(\d+):\w+}/)[1] - 1])
-      );
+      )
       let [key, value] = e.split('|')
       if (value.includes('+')) value = value.split('+').reduce((a, b) => a.plus(b), Big(0)).toNumber()
       else if (value.includes('*')) value = value.split('*').reduce((a, b) => a.times(b), Big(1)).toNumber()
-      else if (value.includes('/')) value = value.split('/').map(a => Big(a).toNumber());
+      else if (value.includes('/')) value = value.split('/').map(a => Big(a).toNumber())
       else value = Big(value.match(/\d*\.*\d+/)[0]).toNumber()
       return [key, value]
     })

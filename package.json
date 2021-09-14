@@ -1,16 +1,18 @@
 {
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node --max_old_space_size=16384 ./node_modules/vite/bin/vite.js build",
     "serve": "vite preview"
   },
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "latest",
     "@tailwindcss/aspect-ratio": "latest",
+    "@tensorflow/tfjs": "latest",
     "autoprefixer": "latest",
     "babel-eslint": "^10.1.0",
     "big.js": "latest",
     "eslint": "latest",
+    "ffmpeg.js": "latest",
     "fs-extra": "latest",
     "inquirer": "latest",
     "node-fetch": "latest",

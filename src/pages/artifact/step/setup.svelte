@@ -1,14 +1,14 @@
 <script>
   import Upload from "@/icon/upload.svelte";
   import { artifact } from "@/algorithm/StoreSystem";
-  const { input } = artifact;
+  const { video } = artifact;
   let uploader;
 </script>
 
 <div
   class="flex flex-col justify-center text-center h-full border-4 border-dashed rounded-xl"
   on:click={uploader.click()}
-  on:drop|preventDefault={(e) => ($input = e.dataTransfer.files[0])}
+  on:drop|preventDefault={(e) => ($video = e.dataTransfer.files[0])}
   on:dragover|preventDefault
 >
   <Upload class="h-14 mx-auto fill-current text-gray-400" />
@@ -18,6 +18,6 @@
     type="file"
     accept="video/*"
     bind:this={uploader}
-    on:change={() => ($input = uploader.files[0])}
+    on:change={() => ($video = uploader.files[0])}
   />
 </div>

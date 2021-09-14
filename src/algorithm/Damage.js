@@ -1,8 +1,8 @@
-import Big from 'big.js';
+import Big from 'big.js'
 
-const plus = (a, b) => Big(a).plus(b).toNumber();
-const times = (a, b) => Big(a).times(b).toNumber();
-const product = (...args) => args.reduce((big, num) => big.times(num), Big(1)).toNumber();
+const plus = (a, b) => Big(a).plus(b).toNumber()
+const times = (a, b) => Big(a).times(b).toNumber()
+const product = (...args) => args.reduce((big, num) => big.times(num), Big(1)).toNumber()
 
 let db = {
   'flower': {
@@ -55,37 +55,37 @@ let db = {
 }
 
 let damage = (character, weapon, percentage, fixed, skilltimes, bonus, critrate, critdamage) => {
-  let getAtk = plus(times(plus(character, weapon), plus(1, percentage)), fixed);
-  let gettimes = skilltimes;
-  let getbonus = plus(1, bonus);
-  let getcrit = plus(1, times(Math.min(critrate, 1), critdamage));
-  return product(getAtk, gettimes, getbonus, getcrit);
+  let getAtk = plus(times(plus(character, weapon), plus(1, percentage)), fixed)
+  let gettimes = skilltimes
+  let getbonus = plus(1, bonus)
+  let getcrit = plus(1, times(Math.min(critrate, 1), critdamage))
+  return product(getAtk, gettimes, getbonus, getcrit)
 }
 
 let cartesianProduct = (...args) => args.reduce((a, b) => {
-  const result = [];
-  a.forEach(a => b.forEach(b => result.push([...a, b])));
-  return result;
+  const result = []
+  a.forEach(a => b.forEach(b => result.push([...a, b])))
+  return result
 }, [[]])
 
 let combine = (arr, len) => {
-  if (len === 1) return arr.map(a => [a]);
-  const result = [];
+  if (len === 1) return arr.map(a => [a])
+  const result = []
   arr.forEach((a, i) => {
-    const smaller = combine(arr.slice(i + 1), len - 1);
-    smaller.forEach(b => result.push([a].concat(b)));
-  });
-  return result;
+    const smaller = combine(arr.slice(i + 1), len - 1)
+    smaller.forEach(b => result.push([a].concat(b)))
+  })
+  return result
 }
 
 let flat = input => {
   var output = {}
   for (var obj of Object.values(input)) {
     for (var [key, value] of Object.entries(obj)) {
-      output[key] = (output[key] || 0) + value;
+      output[key] = (output[key] || 0) + value
     }
   }
-  return output;
+  return output
 }
 
 let mains = cartesianProduct(
@@ -103,7 +103,7 @@ function getBest(panel, element) {
     'sand': {},
     'cup': {},
     'head': {}
-  };
+  }
   element = element
     .replace('phys', '物理伤害加成')
     .replace('雷', '雷元素伤害加成')
@@ -113,13 +113,13 @@ function getBest(panel, element) {
     .replace('火', '火元素伤害加成')
   function upgrade() {
     function tries(key) {
-      var clone = JSON.parse(JSON.stringify(second));
+      var clone = JSON.parse(JSON.stringify(second))
       for (var part in clone) {
-        const obj = clone[part];
-        const values = Object.values(obj);
+        const obj = clone[part]
+        const values = Object.values(obj)
         if ((values.length == 4 ? obj[key] : !obj[key]) && (obj[key] || 0) < 6 && values.reduce((a, b) => a + b, 0) < 9) {
-          obj[key] = (obj[key] || 0) + 1;
-          break;
+          obj[key] = (obj[key] || 0) + 1
+          break
         }
       }
       var obj = flat(clone)
@@ -132,15 +132,15 @@ function getBest(panel, element) {
         panel[element] || 0,
         plus(times(db.second['暴击率'], obj['暴击率'] || 0), panel['暴击率'] || 0),
         plus(times(db.second['暴击伤害'], obj['暴击伤害'] || 0), panel['暴击伤害'] || 0)
-      );
-      return [dmg, () => second = clone];
+      )
+      return [dmg, () => second = clone]
     };
-    Object.keys(db.second).map(tries).sort((a, b) => b[0] - a[0])[0][1]();
+    Object.keys(db.second).map(tries).sort((a, b) => b[0] - a[0])[0][1]()
   }
-  for (var i = 0; i < 45; i++)upgrade();
+  for (var i = 0; i < 45; i++)upgrade()
 
   for (var [key, value] of Object.entries(flat(second))) {
-    panel[key] = plus(panel[key] || 0, times(db.second[key], value));
+    panel[key] = plus(panel[key] || 0, times(db.second[key], value))
   }
 
   var dmg = damage(
@@ -152,23 +152,23 @@ function getBest(panel, element) {
     panel[element] || 0,
     panel['暴击率'] || 0,
     panel['暴击伤害'] || 0
-  );
+  )
   return [dmg, panel]
 }
 
 const getartifacs = (element, character, weapon, skilltimes, other) => {
-  let artifacs = [];
+  let artifacs = []
   for (let main of mains) {
     let panel = {
       '角色攻击力': character,
       '武器攻击力': weapon,
       '技能倍率': skilltimes
     }
-    for (var [key, value] of other) panel[key] = plus(panel[key] || 0, value);
-    for (var [key, value] of main) panel[key] = plus(panel[key] || 0, value);
+    for (var [key, value] of other) panel[key] = plus(panel[key] || 0, value)
+    for (var [key, value] of main) panel[key] = plus(panel[key] || 0, value)
     artifacs.push(getBest(panel, element))
   }
-  return [...artifacs].sort((a, b) => b[0] - a[0])[0];
-};
+  return [...artifacs].sort((a, b) => b[0] - a[0])[0]
+}
 
-export default getartifacs;
+export default getartifacs

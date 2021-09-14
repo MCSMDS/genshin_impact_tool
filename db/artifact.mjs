@@ -1,5 +1,5 @@
-import fs from 'fs-extra';
-import fetch from 'node-fetch';
+import fs from 'fs-extra'
+import fetch from 'node-fetch'
 import { readJsonData, readTextMap } from './utility.mjs'
 
 const jsondata = readJsonData({
@@ -7,7 +7,7 @@ const jsondata = readJsonData({
   ReliquaryExcelConfigData: {},
   EquipAffixExcelConfigData: {},
   ReliquaryCodexExcelConfigData: {}
-});
+})
 
 const getIcon = (name, should) => {
   const download = async () => {
@@ -33,7 +33,7 @@ const artifact = async withicon => {
         Icon: getIcon(artifact.Icon, withicon),
         EquipType: readTextMap(artifact.EquipType),
         Affix: [affixName, ...affixList]
-      });
+      })
     }
   }
   fs.outputJsonSync('src/db/artifact.json', obj)

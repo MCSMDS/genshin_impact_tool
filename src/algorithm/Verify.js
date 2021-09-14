@@ -1,4 +1,4 @@
-import { sum, plus, minus } from '@/algorithm/MathSystem';
+import { sum, plus, minus } from '@/algorithm/MathSystem'
 
 const list = [
   [4.1, 4.7, 5.3, 5.8],
@@ -11,27 +11,27 @@ const list = [
   [209, 239, 269, 299],
   [16, 19, 21, 23],
   [16, 19, 21, 23]
-];
+]
 
 function listBuilder(input) {
-  let output = [];
+  let output = []
   for (let i of input) for (let ii of input) for (let iii of input) for (let iiii of input) for (let iiiii of input) for (let iiiiii of input) {
-    output.push(sum(i));
-    output.push(sum(i, ii));
-    output.push(sum(i, ii, iii));
-    output.push(sum(i, ii, iii, iiii));
-    output.push(sum(i, ii, iii, iiii, iiiii));
-    output.push(sum(i, ii, iii, iiii, iiiii, iiiiii));
+    output.push(sum(i))
+    output.push(sum(i, ii))
+    output.push(sum(i, ii, iii))
+    output.push(sum(i, ii, iii, iiii))
+    output.push(sum(i, ii, iii, iiii, iiiii))
+    output.push(sum(i, ii, iii, iiii, iiiii, iiiiii))
   }
-  return output;
+  return output
 };
 
 const verifyPart = part => {
-  return ['生之花', '死之羽', '时之沙', '空之杯', '理之冠'].includes(part);
+  return ['生之花', '死之羽', '时之沙', '空之杯', '理之冠'].includes(part)
 }
 
 const verifyMain = main => {
-  var abcd;
+  var abcd
   if (main.value.includes('%')) {
     var a = {
       防御力: 58.3,
@@ -58,12 +58,12 @@ const verifyMain = main => {
     }
     abcd = a[main.name]
   }
-  return abcd == main.value.replace('%', '');
+  return abcd == main.value.replace('%', '')
 }
 
 const verifySecond = second => {
-  const cr = i => list[i].length == 4 ? list[i] = listBuilder(list[i]) : list[i];
-  const f = (arr, n) => arr.includes(n);
+  const cr = i => list[i].length == 4 ? list[i] = listBuilder(list[i]) : list[i]
+  const f = (arr, n) => arr.includes(n)
   if (second.value.includes('%')) {
     var a = {
       攻击力: 0,
@@ -72,10 +72,10 @@ const verifySecond = second => {
       元素充能效率: 3,
       暴击率: 4,
       暴击伤害: 5
-    };
-    if (a[second.name] == undefined) return false;
+    }
+    if (a[second.name] == undefined) return false
     var abcd = cr(a[second.name])
-    var n = Number(second.value.replace('%', ''));
+    var n = Number(second.value.replace('%', ''))
     return !isNaN(n) && (f(abcd, n) || f(abcd, plus(n, 0.1)) || f(abcd, minus(n, 0.1)))
   } else {
     var a = {
@@ -83,13 +83,13 @@ const verifySecond = second => {
       生命值: 7,
       防御力: 8,
       元素精通: 9
-    };
-    if (a[second.name] == undefined) return false;
+    }
+    if (a[second.name] == undefined) return false
     var abcd = cr(a[second.name])
-    var n = Number(second.value.replace('%', ''));
+    var n = Number(second.value.replace('%', ''))
     return !isNaN(n) && (f(abcd, n) || f(abcd, plus(n, 1)) || f(abcd, minus(n, 1)))
   }
-};
+}
 
 const verifyAlternative = alternative => {
   const alter = [
@@ -108,9 +108,11 @@ const verifyAlternative = alternative => {
     '逆飞的流星',
     '沉沦之心',
     '千岩牢固',
-    '苍白之火'
-  ];
-  return alter.includes(alternative);
+    '苍白之火',
+    '追忆之注连',
+    '绝缘之旗印'
+  ]
+  return alter.includes(alternative)
 }
 
 const Verify = element => {
@@ -122,7 +124,7 @@ const Verify = element => {
     verifySecond(element.second3),
     verifySecond(element.second4),
     verifyAlternative(element.alternative)
-  ];
-};
+  ]
+}
 
 export default Verify

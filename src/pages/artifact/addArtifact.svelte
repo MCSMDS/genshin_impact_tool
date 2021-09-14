@@ -1,68 +1,80 @@
 <script>
-  import { imageReader, cutImg } from '@/algorithm/mediaUtility'
-  import Recognition from '@/algorithm/Recognition'
-  import Verify from '@/algorithm/Verify'
+  import Recognition from '@/algorithm/Recognition';
+  import Verify from '@/algorithm/Verify';
 
-  import Showresult from './step/showresult.svelte'
-  import Setup from './step/setup.svelte'
-  import Video2image from './step/video2image.svelte'
-  import Readiamge from './step/readiamge.svelte'
-  import Fixerror from './step/fixerror.svelte'
-  import Progress from './step/progress.svelte'
+  import Showresult from './step/showresult.svelte';
+  import Setup from './step/setup.svelte';
+  import Video2image from './step/video2image.svelte';
+  import Readiamge from './step/readiamge.svelte';
+  import Fixerror from './step/fixerror.svelte';
+  import Progress from './step/progress.svelte';
 
-  import FileSystem from '@/algorithm/FileSystem'
+  import { getArtifactBox } from '@/algorithm/Artifact';
+  import { MediaFile, /* video2audio, */ getTimeDomainData, getLoudTimes, video2images, crop } from '@/algorithm/Media';
+  import { video2audio } from '@/algorithm/video';
 
-  import { artifact, images, json, fixindex, myprogress } from '@/algorithm/StoreSystem'
-
-  import { plus, fixPercentage } from '@/algorithm/MathSystem'
+  import { artifact, json, fixindex, myprogress } from '@/algorithm/StoreSystem';
 
   const {
-    input,
-    setting: { thenum, x, y, width, height, cut },
-  } = artifact
+    video,
+    images,
+    setting: { x, y, width, height }
+  } = artifact;
 
-  let showButton
-  $: showButton = $input && $input.type.includes('video')
+  let showButton;
+  $: showButton = $video && $video.type.includes('video');
 
-  let step = 'setup'
+  let step = 'setup';
 
   const buttonClick = async () => {
     switch (step) {
       case 'setup':
-        ;[$x, $y, $width, $height, $cut] = await cutImg(new FileSystem($input))
-        console.log($cut)
-        step = 'video2image'
-        break
+        {
+          (showButton = false), ($myprogress = 0), (step = 'loading');
+          let videofile = new MediaFile($video);
+          let audio = await video2audio(videofile);
+          let data = await getTimeDomainData(audio, 100);
+          let time = getLoudTimes(data, 100);
+          let image = await video2images(videofile, time);
+          let box = getArtifactBox(image[0]);
+          $images = image;
+          [$x, $y, $width, $height] = box;
+          (step = 'video2image'), ($myprogress = 0), (showButton = true);
+        }
+        break;
       case 'video2image':
-        ;(showButton = false), ($myprogress = 0), (step = 'loading')
-        $images = await imageReader(new FileSystem($input), $thenum,$x, $y, $width, $height, (progress) => ($myprogress = progress))
-        console.log($images)
-        ;(step = 'readiamge'), ($myprogress = 0), (showButton = true)
-        break
+        {
+          (showButton = false), ($myprogress = 0), (step = 'loading');
+          $images = $images.map((canvas) => new MediaFile(crop(canvas, $x, $y, $width, $height)));
+          (step = 'readiamge'), ($myprogress = 0), (showButton = true);
+        }
+        break;
       case 'readiamge':
-        ;(showButton = false), ($myprogress = 0), (step = 'loading')
-        let array = []
-        for (var index in $images) {
-          const result = await Recognition($images[index], (progress) => ($myprogress = fixPercentage(plus(index * 100, progress), $images.length * 100)))
-          array.push({ ...result, src: $images[index].toURL(), verify: Verify(result) })
+        {
+          (showButton = false), ($myprogress = 0), (step = 'loading');
+          let array = [];
+          for (var index in $images) {
+            const result = await Recognition($images[index]);
+            array.push({ ...result, src: $images[index].toURL(), verify: Verify(result) });
+          }
+          $json = array;
+          (step = 'fixerror'), ($myprogress = 0), (showButton = true);
+          ($fixindex = -1), buttonClick();
         }
-        $json = array
-        console.log($json)
-        ;(step = 'fixerror'), ($myprogress = 0), (showButton = true)
-        ;($fixindex = -1), buttonClick()
-        break
+        break;
       case 'fixerror':
-        if ($fixindex + 1 == $json.length) {
-          $json = JSON.parse(JSON.stringify($json.map((value) => ({ ...value, src: undefined, verify: undefined }))))
-          console.log($json)
-          ;(step = 'showresult'), (showButton = false)
-        } else {
-          $fixindex++
-          if (!$json[$fixindex].verify.includes(false)) buttonClick()
+        {
+          if ($fixindex + 1 == $json.length) {
+            $json = JSON.parse(JSON.stringify($json.map((value) => ({ ...value, src: undefined, verify: undefined }))));
+            (step = 'showresult'), (showButton = false);
+          } else {
+            $fixindex++;
+            if (!$json[$fixindex].verify.includes(false)) buttonClick();
+          }
         }
-        break
+        break;
     }
-  }
+  };
 </script>
 
 <div class="absolute inset-0 bg-white">
