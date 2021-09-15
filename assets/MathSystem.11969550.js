@@ -1,1 +1,0 @@
-import{B as s}from"./Damage.5bf6f7ca.js";const m=(...m)=>m.reduce(((s,m)=>s.plus(m)),s(0)).toNumber(),a=(m,a)=>s(m).plus(a).toNumber(),e=(m,a)=>s(m).minus(a).toNumber(),o=(m,a)=>s(m).div(a).toNumber();export{o as d,e as m,a as p,m as s};
