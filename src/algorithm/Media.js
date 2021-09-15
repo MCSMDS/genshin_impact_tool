@@ -1,4 +1,4 @@
-import ffmpeg from 'ffmpeg.js/ffmpeg-mp4.js'
+//import ffmpeg from 'ffmpeg.js/ffmpeg-mp4.js'
 
 export const MediaFile = class {
   #file
@@ -60,12 +60,13 @@ export const MediaFile = class {
 }
 
 export const video2audio = async media => {
-  let data = await media.toBuffer()
+  return media
+/*   let data = await media.toBuffer()
   let result = ffmpeg({
     MEMFS: [{ name: 'input.mp4', data }],
     arguments: ['-i', 'input.mp4', 'output.mp3']
   })
-  return new MediaFile(result.MEMFS[0].data.buffer)
+  return new MediaFile(result.MEMFS[0].data.buffer) */
 }
 
 export const getTimeDomainData = async (media, sampleRate) => {
