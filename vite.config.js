@@ -35,8 +35,15 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (path.extname(id) === '.js') {
+            if (id.includes('algorithm/Artifact')) return 'Artifact'
+            if (id.includes('algorithm/Damage')) return 'Damage'
+            if (id.includes('algorithm/MathSystem')) return 'MathSystem'
+            if (id.includes('algorithm/Media')) return 'Media'
+            if (id.includes('algorithm/monaUranai')) return 'monaUranai'
+            if (id.includes('algorithm/opencv')) return 'opencv'
+            if (id.includes('algorithm/StoreSystem')) return 'StoreSystem'
+            if (id.includes('algorithm/Verify')) return 'Verify'
             if (id.includes('node_modules')) return 'vendor'
-            if (id.includes('algorithm')) return 'algorithm'
           }
           if (path.extname(id) === '.json') {
             return 'json'
