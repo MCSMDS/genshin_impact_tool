@@ -36,7 +36,6 @@ export default defineConfig({
         manualChunks(id) {
           if (path.extname(id) === '.js') {
             if (id.includes('node_modules')) return 'vendor'
-            if (id.includes('ffmpeg.js')) return 'ffmpeg'
             if (id.includes('algorithm')) return 'algorithm'
           }
           if (path.extname(id) === '.json') {

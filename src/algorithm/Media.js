@@ -1,4 +1,4 @@
-//import ffmpeg from 'ffmpeg.js/ffmpeg-mp4.js'
+import ffmpeg from 'ffmpeg.js/ffmpeg-mp4.js'
 
 export const MediaFile = class {
   #file
@@ -59,7 +59,7 @@ export const MediaFile = class {
   }
 }
 
-/* export const video2audio = async media => {
+export const video2audio = async media => {
   let data = await media.toBuffer()
   let result = ffmpeg({
     MEMFS: [{ name: 'input.mp4', data }],
@@ -67,7 +67,7 @@ export const MediaFile = class {
   })
   return new MediaFile(result.MEMFS[0].data.buffer)
 }
- */
+
 export const getTimeDomainData = async (media, sampleRate) => {
   const ac = new (window.AudioContext || window.webkitAudioContext)()
   const buffer = await media.toBuffer()
@@ -150,29 +150,4 @@ export const crop = (image, x, y, width, height) => {
   canvas.height = height
   canvas.getContext('2d').drawImage(image, x, y, width, height, 0, 0, width, height)
   return canvas
-}
-
-export const preprocess = image => {
-  let src = cv.imread(image)
-  cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY)
-  cv.blur(src, src, new cv.Size(3, 3))
-  let min = Math.min(...src.data)
-  src.data.map((c, i) => src.data[i] = src.data[i] - min)
-  let max = Math.max(...src.data)
-  src.data.map((c, i) => src.data[i] = src.data[i] / max * 255)
-  src.data.map((c, i) => src.data[i] = 255 - src.data[i])
-
-  let mask = new cv.Mat()
-  cv.threshold(src, mask, 0, 255, cv.THRESH_OTSU)//cv.THRESH_BINARY_INV
-  mask = tf.tensor2d(mask.data, [mask.rows, mask.cols], 'bool')
-  let [c, r] = [mask.any(0), mask.any(1)]
-  let x = c.argMax().arraySync()
-  let y = r.argMax().arraySync()
-  let width = src.cols - c.reverse().argMax().arraySync() - x
-  let height = src.rows - r.reverse().argMax().arraySync() - y
-  src = src.roi(new cv.Rect(x, y, width, height))
-
-  cv.cvtColor(src, src, cv.COLOR_GRAY2RGB)
-  cv.resize(src, src, new cv.Size(32 / src.rows * src.cols, 32), 0, 0, cv.INTER_LINEAR)
-  cv.copyMakeBorder(src, src, 0, 0, 0, 256 - src.cols, cv.BORDER_CONSTANT)
 }

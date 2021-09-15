@@ -19,7 +19,6 @@
     "postcss": "latest",
     "svelte": "latest",
     "tailwindcss": "latest",
-    "tesseract.js": "latest",
     "vite": "latest"
   }
 }

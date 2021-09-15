@@ -1,5 +1,5 @@
 <script>
-  import Recognition from '@/algorithm/Recognition';
+
   import Verify from '@/algorithm/Verify';
 
   import Showresult from './step/showresult.svelte';
@@ -10,15 +10,15 @@
   import Progress from './step/progress.svelte';
 
   import { getArtifactBox } from '@/algorithm/Artifact';
-  import { MediaFile, /* video2audio, */ getTimeDomainData, getLoudTimes, video2images, crop } from '@/algorithm/Media';
-  import { video2audio } from '@/algorithm/video';
+  import { MediaFile, video2audio, getTimeDomainData, getLoudTimes, video2images, crop } from '@/algorithm/Media';
 
   import { artifact, json, fixindex, myprogress } from '@/algorithm/StoreSystem';
+  import {readArtifact} from '@/algorithm/Artifact';
 
   const {
     video,
     images,
-    setting: { x, y, width, height }
+    setting: { x, y, width, height },
   } = artifact;
 
   let showButton;
@@ -32,10 +32,15 @@
         {
           (showButton = false), ($myprogress = 0), (step = 'loading');
           let videofile = new MediaFile($video);
+          $myprogress = 20;
           let audio = await video2audio(videofile);
+          $myprogress = 40;
           let data = await getTimeDomainData(audio, 100);
+          $myprogress = 60;
           let time = getLoudTimes(data, 100);
+          $myprogress = 80;
           let image = await video2images(videofile, time);
+          $myprogress = 100;
           let box = getArtifactBox(image[0]);
           $images = image;
           [$x, $y, $width, $height] = box;
@@ -53,8 +58,10 @@
         {
           (showButton = false), ($myprogress = 0), (step = 'loading');
           let array = [];
+          let len=100/$images.length
           for (var index in $images) {
-            const result = await Recognition($images[index]);
+            const result = await readArtifact($images[index]);
+            $myprogress+=len
             array.push({ ...result, src: $images[index].toURL(), verify: Verify(result) });
           }
           $json = array;
