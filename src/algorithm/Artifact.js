@@ -1,37 +1,119 @@
 import { crop } from '@/algorithm/Media'
 import * as tf from '@tensorflow/tfjs'
 import cv from '@/algorithm/opencv'
+window.cv = cv
 
 export const getArtifactBox = image => {
-  const src = cv.imread(image)
-  cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
-  cv.Canny(src, src, 8, 128, 3, true)
-  cv.dilate(src, src, new cv.Mat())
-  const contours = new cv.MatVector()
-  cv.findContours(src, contours, new cv.Mat(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-  const area = []
-  for (let i = 0; i < contours.size(); i++) { area.push(cv.contourArea(contours.get(i))) }
-  const { x, y, width, height } = cv.boundingRect(contours.get(area.indexOf(Math.max(...area))))
-  return [x + 5, y + 5, width - 5, height - 5]
+  let bottomRect = (() => {
+    let src = cv.imread(image)
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
+    cv.threshold(src, src, 0, 255, cv.THRESH_TRIANGLE)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let area = []
+    for (let i = 0; i < contours.size(); i++) {
+      area.push(cv.contourArea(contours.get(i)))
+    }
+    let result = cv.boundingRect(contours.get(area.indexOf(Math.max(...area))))
+    src.delete(); contours.delete(); hierarchy.delete()
+    return result
+  })()
+  let topRect = (() => {
+    let src = cv.imread(image).roi(new cv.Rect(bottomRect.x, 0, bottomRect.width, bottomRect.y))
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
+    cv.threshold(src, src, 100, 255, cv.THRESH_BINARY)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let result = null
+    for (let i = 0; i < contours.size(); i++) {
+      let rect = cv.boundingRect(contours.get(i))
+      if (rect.width == bottomRect.width) result = rect
+    }
+    src.delete(); contours.delete(); hierarchy.delete()
+    return result
+  })()
+  return [bottomRect.x, topRect.y, bottomRect.width, bottomRect.y + bottomRect.height - topRect.y]
 }
 
 export const getArtifactContentBox = image => {
-  const src = cv.imread(image.toCanvas())
-  cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
-  cv.Canny(src, src, 8, 128, 3, true)
-  cv.dilate(src, src, cv.Mat.ones(8, 32, cv.CV_8U))
-  const contours = new cv.MatVector()
-  cv.findContours(src, contours, new cv.Mat(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-  let area = []
-  for (let i = 0; i < contours.size(); i++) {
-    const cnt = contours.get(i)
-    const rect = cv.boundingRect(cnt)
-    const aspectRatio = rect.width / rect.height
-    if (aspectRatio > 1.5 && aspectRatio < 16) {
-      area.push([rect.x, rect.y, rect.width, rect.height])
+  let bottomRect = (() => {
+    let src = cv.imread(image.toCanvas())
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
+    cv.threshold(src, src, 0, 255, cv.THRESH_TRIANGLE)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let area = []
+    for (let i = 0; i < contours.size(); i++) {
+      area.push(cv.contourArea(contours.get(i)))
     }
+    let result = cv.boundingRect(contours.get(area.indexOf(Math.max(...area))))
+    src.delete(); contours.delete(); hierarchy.delete()
+    return result
+  })()
+  let alternativeRect = (() => {
+    let src = cv.imread(image.toCanvas()).roi(new cv.Rect(bottomRect.x, bottomRect.y, bottomRect.width, bottomRect.height))
+    let M = cv.Mat.ones(8, 16, cv.CV_8U)
+    let low = new cv.Mat(src.rows, src.cols, cv.CV_8UC3, [35, 43, 46, 0])
+    let high = new cv.Mat(src.rows, src.cols, cv.CV_8UC3, [77, 255, 255, 0])
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.erode(src, src, M)
+    cv.cvtColor(src, src, cv.COLOR_RGB2HSV)
+    cv.inRange(src, low, high, src)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let area = []
+    for (let i = 0; i < contours.size(); i++) {
+      area.push(cv.contourArea(contours.get(i)))
+    }
+    let result = cv.boundingRect(contours.get(area.indexOf(Math.max(...area))))
+    src.delete(); M.delete(); low.delete(); high.delete(); contours.delete(); hierarchy.delete()
+    return result
+  })()
+  let bottomRects = (() => {
+    let src = cv.imread(image.toCanvas()).roi(new cv.Rect(bottomRect.x, bottomRect.y, bottomRect.width, alternativeRect.y))
+    let M = cv.Mat.ones(8, 16, cv.CV_8U)
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.erode(src, src, M)
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
+    cv.threshold(src, src, 0, 255, cv.THRESH_OTSU)
+    cv.bitwise_not(src, src)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let rect = []
+    for (let i = 0; i < contours.size(); i++) {
+      rect.push(cv.boundingRect(contours.get(i)))
+    }
+    let range = [0, bottomRect.width / 2]
+    src.delete(); M.delete(); contours.delete(); hierarchy.delete()
+    return rect.filter(i => i.x > range[0] && i.x < range[1]).sort((a, b) => a.y - b.y)
+  })()
+  let topRects = (() => {
+    let src = cv.imread(image.toCanvas()).roi(new cv.Rect(bottomRect.x, 0, bottomRect.width, bottomRect.y))
+    let M = cv.Mat.ones(8, 16, cv.CV_8U)
+    let contours = new cv.MatVector()
+    let hierarchy = new cv.Mat()
+    cv.dilate(src, src, M)
+    cv.cvtColor(src, src, cv.COLOR_RGB2GRAY)
+    cv.threshold(src, src, 0, 255, cv.THRESH_OTSU)
+    cv.findContours(src, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    let rect = []
+    for (let i = 0; i < contours.size(); i++) {
+      rect.push(cv.boundingRect(contours.get(i)))
+    }
+    let range = [0, bottomRect.width / 2]
+    src.delete(); M.delete(); contours.delete(); hierarchy.delete()
+    return rect.filter(i => i.x > range[0] && i.x < range[1]).sort((a, b) => a.y - b.y)
+  })()
+  return {
+    part: [topRects[1].x - 3, topRects[1].y - 3, topRects[1].width + 3, topRects[1].height + 3],
+    main1: [topRects[2].x - 3, topRects[2].y - 3, topRects[2].width + 3, topRects[2].height + 3],
+    main2: [topRects[3].x - 3, topRects[3].y - 3, topRects[3].width + 3, topRects[3].height + 3],
+    second: bottomRects.slice(1).map(i => [i.x - 3, bottomRect.y + i.y - 3, i.width + 3, i.height + 3]),
+    alternative: [alternativeRect.x - 3, bottomRect.y + alternativeRect.y - 3, alternativeRect.width + 3, alternativeRect.height + 3]
   }
-  return area.reverse().slice(0, 11)
 }
 
 class CharacterTable {
@@ -77,16 +159,18 @@ export const preprocess = (inputi, theif) => {
   let height = src.rows - r.reverse().argMax().arraySync() - y
   src = src.roi(new cv.Rect(x, y, width, height))
 
-  cv.resize(src, src, new cv.Size(32 / src.rows * src.cols, 32), 0, 0, cv.INTER_LINEAR)
-  cv.copyMakeBorder(src, src, 0, 0, 0, 384 - src.cols, cv.BORDER_CONSTANT)
+  cv.resize(src, src, new cv.Size(16 / src.rows * src.cols, 16), 0, 0, cv.INTER_LINEAR)
+  cv.copyMakeBorder(src, src, 0, 0, 0, 192 - src.cols, cv.BORDER_CONSTANT)
 
   return [...src.data].map(i => i / 255)
 }
 
+let table = null
+let model = null
 export const recognition = async input => {
-  let table = new CharacterTable()
-  let model = await tf.loadLayersModel((import.meta.env.DEV ? 'src/' : '') + 'langPath/model.json')
-  let output = model.predict(tf.tensor4d(input.flat(), [input.length, 32, 384, 1]))
+  if (!table) table = new CharacterTable()
+  if (!model) model = await tf.loadLayersModel((import.meta.env.DEV ? 'src/' : '') + 'langPath/model.json')
+  let output = model.predict(tf.tensor4d(input.flat(), [input.length, 16, 192, 1]))
   return table.decode(output)
 }
 
@@ -95,17 +179,16 @@ export const readArtifact = async image => {
     name: (str.split('+')[0] || '').replace(/[^攻击力生命值防御元素充能效率暴伤害精通]/g, ''),
     value: (str.split('+')[1] || '').replace(/[^123456789.0%]/g, '')
   })
-
   const box = getArtifactContentBox(image)
 
-  let part = preprocess(crop(image.toCanvas(), ...box[1]))
-  let main1 = preprocess(crop(image.toCanvas(), ...box[2]))
-  let main2 = preprocess(crop(image.toCanvas(), ...box[3]))
-  let second1 = preprocess(crop(image.toCanvas(), ...box[6]), true)
-  let second2 = preprocess(crop(image.toCanvas(), ...box[7]), true)
-  let second3 = preprocess(crop(image.toCanvas(), ...box[8]), true)
-  let second4 = preprocess(crop(image.toCanvas(), ...box[9]), true)
-  let alternative = preprocess(crop(image.toCanvas(), ...box[10]))
+  let part = preprocess(crop(image.toCanvas(), ...box.part))
+  let main1 = preprocess(crop(image.toCanvas(), ...box.main1))
+  let main2 = preprocess(crop(image.toCanvas(), ...box.main2))
+  let second1 = preprocess(crop(image.toCanvas(), ...box.second[0]), true)
+  let second2 = preprocess(crop(image.toCanvas(), ...box.second[1]), true)
+  let second3 = preprocess(crop(image.toCanvas(), ...box.second[2]), true)
+  let second4 = preprocess(crop(image.toCanvas(), ...box.second[3]), true)
+  let alternative = preprocess(crop(image.toCanvas(), ...box.alternative))
 
   let str = await recognition([part, main1, main2, second1, second2, second3, second4, alternative]);
 

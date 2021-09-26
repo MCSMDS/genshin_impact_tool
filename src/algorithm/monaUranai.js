@@ -1,4 +1,4 @@
-import { div } from '@/algorithm/MathSystem'
+import { div } from '@/algorithm/Library'
 
 const toSetName = alternative => {
   return alternative

@@ -15,13 +15,20 @@
     const area = getArtifactContentBox(new MediaFile(image));
     const canvas = document.createElement('canvas');
     const dst = cv.imread(image);
-    area.map(([x, y, width, height]) => cv.rectangle(dst, new cv.Point(x, y), new cv.Point(x + width, y + height), new cv.Scalar(0, 0, 0, 255), 3));
+    abc = [];
+    const draw = ([x, y, width, height]) => {
+      cv.rectangle(dst, new cv.Point(x, y), new cv.Point(x + width, y + height), new cv.Scalar(0, 0, 0, 255), 3);
+      //abc.push(new MediaFile(crop(image, x, y, width, height)).toURL());
+    };
+    draw(area.part);
+    draw(area.main1);
+    draw(area.main2);
+    draw(area.alternative);
+    area.second.map((i) => draw(i));
     cv.imshow(canvas, dst);
-    abc = area.map(([x, y, width, height]) => {
-      return new MediaFile(crop(image, x, y, width, height)).toURL();
-    });
     return canvas;
   };
+  window.colorText = colorText;
 </script>
 
 <div class="flex rounded-md shadow mb-1">
@@ -64,7 +71,8 @@
   />
 </div>
 
-<img src={new MediaFile(colorText(crop($images[0], $x, $y, $width, $height))).toURL()} alt="" />
+<img src={new MediaFile(colorText(crop($images[1], $x, $y, $width, $height))).toURL()} alt="" id="input" />
+<canvas id="output" />
 
 {#each abc as ab}
   <img src={ab} alt="" />

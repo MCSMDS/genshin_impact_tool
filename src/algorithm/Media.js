@@ -65,7 +65,8 @@ export const video2audio = async media => {
     MEMFS: [{ name: 'input.mp4', data }],
     arguments: ['-i', 'input.mp4', 'output.mp3']
   })
-  return new MediaFile(result.MEMFS[0].data.buffer) 
+  return new MediaFile(result.MEMFS[0].data.buffer)
+  return media
 }
 
 export const getTimeDomainData = async (media, sampleRate) => {
@@ -73,13 +74,8 @@ export const getTimeDomainData = async (media, sampleRate) => {
   const buffer = await media.toBuffer()
   const data = await new Promise(resolve => ac.decodeAudioData(buffer, resolve))
   const normalization = arr => {
-    let max = 0
-    for (let i in arr) {
-      arr[i] = Math.abs(arr[i])
-      max = Math.max(arr[i], max)
-    }
-    for (let i in arr) arr[i] /= max
-    return arr
+    let result = [...arr].abs()
+    return result.div(result.max())
   }
   const compression = (arr, size) => {
     const result = []
@@ -125,15 +121,16 @@ export const video2images = (media, times) => new Promise(resolve => {
   const images = []
   const video = document.createElement('video')
   video.addEventListener('loadeddata', () => video.currentTime = times[index])
-  video.addEventListener('seeked', async () => {
+  video.addEventListener('seeked', () => {
     if (index < times.length) {
       const canvas = document.createElement('canvas')
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
-      await new Promise(resolve => setTimeout(resolve, 512))
-      canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
-      images.push(canvas)
-      video.currentTime = times[index = index + 1] || 0
+      requestAnimationFrame(() => {
+        canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
+        images.push(canvas)
+        video.currentTime = times[index = index + 1] || 0
+      })
     } else {
       resolve(images)
     }

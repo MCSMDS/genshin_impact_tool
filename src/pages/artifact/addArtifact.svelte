@@ -1,5 +1,4 @@
 <script>
-
   import Verify from '@/algorithm/Verify';
 
   import Showresult from './step/showresult.svelte';
@@ -13,7 +12,7 @@
   import { MediaFile, video2audio, getTimeDomainData, getLoudTimes, video2images, crop } from '@/algorithm/Media';
 
   import { artifact, json, fixindex, myprogress } from '@/algorithm/StoreSystem';
-  import {readArtifact} from '@/algorithm/Artifact';
+  import { readArtifact } from '@/algorithm/Artifact';
 
   const {
     video,
@@ -39,7 +38,9 @@
           $myprogress = 60;
           let time = getLoudTimes(data, 100);
           $myprogress = 80;
+          console.time('video2images');
           let image = await video2images(videofile, time);
+          console.timeEnd('video2images');
           $myprogress = 100;
           let box = getArtifactBox(image[0]);
           $images = image;
@@ -58,11 +59,11 @@
         {
           (showButton = false), ($myprogress = 0), (step = 'loading');
           let array = [];
-          let len=100/$images.length
-          for (var index in $images) {
-            const result = await readArtifact($images[index]);
-            $myprogress+=len
-            array.push({ ...result, src: $images[index].toURL(), verify: Verify(result) });
+          let len = 100 / $images.length;
+          for (var image of $images) {
+            const result = await readArtifact(image);
+            $myprogress += len;
+            array.push({ ...result, src: image.toURL(), verify: Verify(result) });
           }
           $json = array;
           (step = 'fixerror'), ($myprogress = 0), (showButton = true);

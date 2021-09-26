@@ -1,4 +1,4 @@
-import { sum, plus, minus } from '@/algorithm/MathSystem'
+import { sum, plus, minus } from '@/algorithm/Library'
 
 const list = [
   [4.1, 4.7, 5.3, 5.8],
