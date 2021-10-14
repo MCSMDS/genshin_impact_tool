@@ -169,7 +169,7 @@ let table = null
 let model = null
 export const recognition = async input => {
   if (!table) table = new CharacterTable()
-  if (!model) model = await tf.loadLayersModel((import.meta.env.DEV ? 'src/' : '') + 'langPath/model.json')
+  if (!model) model = await tf.loadLayersModel((import.meta.env.DEV ? 'src/' : '') + 'modelfiles/model.json')
   let output = model.predict(tf.tensor4d(input.flat(), [input.length, 16, 192, 1]))
   return table.decode(output)
 }

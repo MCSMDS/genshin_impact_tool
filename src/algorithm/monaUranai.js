@@ -18,8 +18,8 @@ const toSetName = alternative => {
     .replace('沉沦之心', 'heartOfDepth')
     .replace('千岩牢固', 'tenacityOfTheMillelith')
     .replace('苍白之火', 'paleFlame')
-    .replace('追忆之注连', 'shimenawaReminiscence').
-    replace('绝缘之旗印', 'emblemOfSeveredFate')
+    .replace('追忆之注连', 'shimenawaReminiscence')
+    .replace('绝缘之旗印', 'emblemOfSeveredFate')
 }
 
 const toPosition = part => {

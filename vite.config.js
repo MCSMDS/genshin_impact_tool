@@ -11,7 +11,7 @@ const plugins = () => {
     },
     closeBundle() {
       if (mode === 'build') {
-        fs.copySync('src/langPath', 'dist/langPath')
+        fs.copySync('src/modelfiles', 'dist/modelfiles')
         fs.copySync('src/db/icon', 'dist/db')
       }
     }
